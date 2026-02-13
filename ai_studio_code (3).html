@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Valentine 💘</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; }
+        
+        /* THEME: Purple/Blue Gradient (Viral Video Style) */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Floating Hearts Animation */
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            animation: float 7s infinite ease-in;
+            z-index: 0;
+            font-size: 20px;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Glitch Animation */
+        .shake-mode {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border: 3px solid #ff4757;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        h2 { color: #553c9a; margin-bottom: 20px; font-size: 1.3rem; font-weight: 700; }
+        
+        .progress-bar { width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: #805ad5; transition: width 0.3s ease; }
+
+        /* Options */
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn {
+            background: #f7fafc;
+            border: 2px solid #edf2f7;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2d3748;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .btn:hover { background: #e2e8f0; border-color: #cbd5e0; }
+        .btn.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold; }
+        .btn.wrong { background: #fed7d7; border-color: #f56565; color: #742a2a; }
+
+        /* Feedback Box */
+        .message-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: slideDown 0.3s ease;
+        }
+        .msg-success { background: #f0fff4; border-left: 5px solid #38a169; color: #22543d; }
+        .msg-error { background: #fff5f5; border-left: 5px solid #e53e3e; color: #c53030; }
+
+        /* Next Button */
+        .next-btn {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Error Overlay */
+        .error-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.25);
+            display: none; justify-content: center; align-items: center;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+        .error-text {
+            background: white; color: #e53e3e; padding: 25px;
+            border-radius: 15px; font-weight: 800; font-size: 1.4rem;
+            box-shadow: 0 0 30px #e53e3e; border: 3px solid #e53e3e;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- FINAL SCREEN (New Animation) --- */
+        .final-screen { display: none; text-align: left; }
+        
+        .typewriter-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            border-left: 4px solid #667eea;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.8;
+            position: relative;
+        }
+
+        /* The cursor effect */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 15px;
+            background: #667eea;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- ERROR POPUP -->
+    <div class="error-overlay" id="errorOverlay">
+        <div class="error-text">⚠️ SYSTEM ERROR ⚠️<br><span style="font-size:12px; color:black;">Rejection Not Allowed</span></div>
+    </div>
+
+    <!-- BACKGROUND HEARTS -->
+    <script>
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.innerText = Math.random() > 0.5 ? '❤️' : '💖';
+            heart.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }, 500);
+    </script>
+
+    <div class="container" id="quizContainer">
+        <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+        
+        <h2 id="questionText">Loading...</h2>
+        
+        <div class="options-grid" id="optionsArea"></div>
+
+        <div id="feedbackArea" class="message-box"></div>
+
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+    </div>
+
+    <!-- FINAL SCREEN -->
+    <div class="container final-screen" id="finalContainer">
+        <div style="font-size: 60px;">👩‍❤️‍💋‍👨</div>
+        <h2 style="color: #6b46c1;">Happy Valentine's Day! 🌹</h2>
+        
+        <!-- The Animated Paragraph -->
+        <div class="typewriter-box">
+            <span id="typedText"></span><span class="cursor"></span>
+        </div>
+
+        <button class="next-btn" style="display:block; background: #e53e3e; margin-top: 20px;" onclick="celebrate()">I Love You Rexx ❤️</button>
+    </div>
+
+<script>
+    // --- QUESTIONS (7 Months removed) ---
+    const quizData = [
+        {
+            q: "Official Check: Humari 'Date' kya hai? (Ghalat mat karna) 📅",
+            options: ["14 Feb", "17 June", "1 Dec", "Mujhe Nahi Yaad"],
+            correct: 1,
+            success: "Bilkul Sahi! ✨ 17 June wo din tha jab meri kismat chamak gayi thi. Ap meri life mein aayi aur sab kuch beautiful ho gaya.",
+            fail: "Haww! 😱 Valentine's Day par date bhool gayin? Rexx ro padega abhi! Wapas try karein."
+        },
+        {
+            q: "Ladai hone par 'Sorry' sabse pehle kaun bolta hai? 😤",
+            options: ["Fatima", "Rexx (Hamesha)", "Koi Nahi", "Dono Nahi"],
+            correct: 1,
+            success: "Universal Truth! 😂 Galti kisi ki bhi ho, jhukta toh Rexx hi hai. Kyunki apki narazgi mujhse bardaasht nahi hoti.",
+            fail: "Jhooth! 🤥 Apne aaj tak pehle sorry bola hai? Mujhe toh yaad nahi aa raha. Sach bolo!"
+        },
+        {
+            q: "Sach Batayein: Rexx apke liye kya hai? 🦋",
+            options: ["Bas Timepass", "Mera Sukoon & Ghar", "Ek Acha Dost", "Pata Nahi"],
+            correct: 1,
+            success: "Haye! 🙈 'Sukoon' aur 'Ghar'... ye sunke dil garden garden ho gaya. Ap bhi mera sukoon hain Fatima.",
+            fail: "Excuse me? 😤 Itni mehnat kar raha hoon aur main timepass hoon? Dil tod diya... Sahi jawab select karein!"
+        },
+        {
+            q: "Final Level: Will You Be My Valentine Forever? 🌹",
+            options: ["Yes, 1000% ❤️", "Sochungi...", "No ❌", "Busy Hoon"],
+            correct: 0,
+            success: "Qubool hai! 💍 Ab ap officially meri Valentine hain. Koi return policy nahi hai. You are mine.",
+            fail: "HEARTBREAK ERROR! 💔 Is system mein 'Na' sunne ki coding hi nahi hai. Chup chap 'Yes' dabayein!"
+        }
+    ];
+
+    let current = 0;
+    const qText = document.getElementById('questionText');
+    const optArea = document.getElementById('optionsArea');
+    const feedback = document.getElementById('feedbackArea');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const container = document.getElementById('quizContainer');
+    const errorOverlay = document.getElementById('errorOverlay');
+
+    function loadQuestion() {
+        const data = quizData[current];
+        qText.innerText = data.q;
+        optArea.innerHTML = '';
+        feedback.style.display = 'none';
+        nextBtn.style.display = 'none';
+        
+        progressBar.style.width = ((current) / quizData.length) * 100 + "%";
+
+        data.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, idx);
+            optArea.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btn, idx) {
+        const data = quizData[current];
+        const allBtns = document.querySelectorAll('.btn');
+
+        if (idx === data.correct) {
+            btn.classList.add('correct');
+            allBtns.forEach(b => b.disabled = true);
+            feedback.className = "message-box msg-success";
+            feedback.innerHTML = `<strong>✅ Sahi Jawab:</strong><br>${data.success}`;
+            feedback.style.display = "block";
+            confetti({ particleCount: 50, spread: 70, origin: { y: 0.7 } });
+            nextBtn.style.display = "block";
+        } else {
+            btn.classList.add('wrong');
+            triggerGlitch();
+            feedback.className = "message-box msg-error";
+            feedback.innerHTML = `<strong>⚠️ Error:</strong><br>${data.fail}`;
+            feedback.style.display = "block";
+        }
+    }
+
+    function triggerGlitch() {
+        container.classList.add('shake-mode');
+        errorOverlay.style.display = 'flex';
+        setTimeout(() => {
+            container.classList.remove('shake-mode');
+            errorOverlay.style.display = 'none';
+        }, 800);
+    }
+
+    function nextQuestion() {
+        current++;
+        if (current < quizData.length) {
+            loadQuestion();
+        } else {
+            container.style.display = 'none';
+            document.getElementById('finalContainer').style.display = 'block';
+            fireworks();
+            startTypewriter(); // Start the animation
+        }
+    }
+
+    // --- TYPEWRITER LOGIC (UNIQUE & NEW) ---
+    const finalMsg = `Meri Pyaari Fatima,
+
+Aaj Valentine's Day hai, aur maine koi mehenga tohfa nahi khareeda. Kyunki mujhe lagta hai 'Waqt' aur 'Wada' se bada koi gift nahi hota.
+
+Log kehte hain dooriyan rishte khatam kar deti hain. Galat kehte hain wo. Humari doori ne mujhe sikhaya hai ki 'Sabr' kya hota hai.
+
+Ye 17 June se shuru hua safar abhi bohot lamba jayega. Raaste mein kaante honge, ladaiyan hongi... par ant mein, Manzil sirf 'Fatima' hogi.
+
+Main wada karta hoon, 7.5 saal baad jab main apke saamne aaunga, toh koi screen nahi hogi, sirf hum honge.
+
+Hamesha Apka,
+Rexx. ❤️`;
+
+    function startTypewriter() {
+        let i = 0;
+        const speed = 40; // Typing speed (ms)
+        const textElement = document.getElementById("typedText");
+        
+        function type() {
+            if (i < finalMsg.length) {
+                // Handle new lines for correct formatting
+                if (finalMsg.charAt(i) === '\n') {
+                    textElement.innerHTML += '<br>';
+                } else {
+                    textElement.innerHTML += finalMsg.charAt(i);
+                }
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    function celebrate() {
+        alert("Fatima ji, Happy Valentine's Day! 🌹\nLove, Rexx.");
+        fireworks();
+    }
+
+    function fireworks() {
+        var duration = 5 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) { return clearInterval(interval); }
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: ['#ff0000', '#ff69b4'] }));
+        }, 250);
+    }
+
+    // Start
+    loadQuestion();
+
+</script>
+</body>
+</html>
